@@ -52,6 +52,31 @@ export default async function handler(req, res) {
     return res.status(200).json({ html: cleanHtml });
   } catch (error) {
     console.error("Gemini Backend Error:", error);
-    return res.status(500).json({ error: "BACKEND ERROR: " + error.message });
+
+    // Classify the error for the frontend
+    let statusCode = 500;
+    let errorCode = 'UNKNOWN';
+    let userMessage = 'An unexpected error occurred. Please try again.';
+
+    const msg = error.message || '';
+    if (msg.includes('429') || msg.includes('quota') || msg.includes('Too Many Requests')) {
+      statusCode = 429;
+      errorCode = 'QUOTA_EXCEEDED';
+      userMessage = 'API quota has been exceeded. The API key may need to be refreshed or upgraded. Please contact the administrator.';
+    } else if (msg.includes('403') || msg.includes('API key not valid') || msg.includes('PERMISSION_DENIED')) {
+      statusCode = 403;
+      errorCode = 'INVALID_KEY';
+      userMessage = 'The API key is invalid or has been revoked. Please generate a new key from Google AI Studio.';
+    } else if (msg.includes('404') || msg.includes('not found')) {
+      statusCode = 404;
+      errorCode = 'MODEL_NOT_FOUND';
+      userMessage = 'The AI model could not be found. Please contact the administrator.';
+    }
+
+    return res.status(statusCode).json({
+      error: userMessage,
+      code: errorCode,
+      detail: msg
+    });
   }
 }

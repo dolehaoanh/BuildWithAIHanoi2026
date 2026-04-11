@@ -125,6 +125,29 @@
     #gemini-response li { margin-bottom: 0.5rem; color: #e2e2e3; position: relative; list-style: none; }
     #gemini-response li::before { content: '▶'; color: #abd600; position: absolute; left: -1.2rem; font-size: 0.6rem; top: 0.4rem; }
     #gemini-response strong { color: #ffffff; font-weight: 700; }
+
+    /* Error Banner */
+    #error-banner {
+        opacity: 0;
+        transform: translateY(-12px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+        pointer-events: none;
+        max-height: 0;
+        overflow: hidden;
+    }
+    #error-banner.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+        max-height: 300px;
+    }
+    #error-banner .error-progress {
+        animation: errorCountdown 12s linear forwards;
+    }
+    @keyframes errorCountdown {
+        from { width: 100%; }
+        to { width: 0%; }
+    }
   </style>
   </head>
 <body class="bg-background text-on-background font-body min-h-screen flex flex-col overflow-x-hidden">
@@ -258,6 +281,28 @@
 </button>
 </div>
 </form>
+
+<!-- Inline Error Banner -->
+<div id="error-banner" class="mt-4 rounded-xl overflow-hidden relative" style="background: rgba(147, 0, 10, 0.15); border: 1px solid rgba(255, 180, 171, 0.2); backdrop-filter: blur(12px);">
+    <div class="p-5 flex items-start gap-4">
+        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background: rgba(147, 0, 10, 0.3);">
+            <span id="error-icon" class="material-symbols-outlined" style="color: #ffb4ab;">error</span>
+        </div>
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+                <p class="font-headline font-bold text-xs uppercase tracking-tight" style="color: #ffb4ab;">System Fault</p>
+                <span id="error-code-badge" class="font-label text-[8px] uppercase tracking-widest px-2 py-0.5 rounded" style="background: rgba(147, 0, 10, 0.3); color: #ffb4ab;">ERR</span>
+            </div>
+            <p id="error-message" class="font-body text-sm leading-relaxed" style="color: #ffdad6;"></p>
+        </div>
+        <button id="dismiss-error" class="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center transition-all hover:scale-110 active:scale-90" style="background: rgba(147, 0, 10, 0.3); color: #ffb4ab;">
+            <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+    </div>
+    <div class="w-full h-[2px]" style="background: rgba(147, 0, 10, 0.2);">
+        <div id="error-progress" class="h-full error-progress" style="background: #ffb4ab;"></div>
+    </div>
+</div>
 </div>
 </div>
 </main>
@@ -294,6 +339,53 @@
     const resultsOverlay = document.getElementById('results-overlay');
     const responseContainer = document.getElementById('gemini-response');
     const closeResults = document.getElementById('close-results');
+    const errorBanner = document.getElementById('error-banner');
+    const errorMessage = document.getElementById('error-message');
+    const errorCodeBadge = document.getElementById('error-code-badge');
+    const errorIcon = document.getElementById('error-icon');
+    const errorProgress = document.getElementById('error-progress');
+    const dismissError = document.getElementById('dismiss-error');
+
+    let errorTimeout = null;
+
+    function showError(message, code) {
+        // Clear any previous timer
+        if (errorTimeout) clearTimeout(errorTimeout);
+
+        // Set message
+        errorMessage.textContent = message;
+        errorCodeBadge.textContent = code || 'ERR';
+
+        // Set contextual icon
+        const icons = {
+            'QUOTA_EXCEEDED': 'speed',
+            'INVALID_KEY': 'vpn_key_off',
+            'MODEL_NOT_FOUND': 'search_off',
+            'NETWORK': 'wifi_off',
+        };
+        errorIcon.textContent = icons[code] || 'error';
+
+        // Reset and restart progress bar animation
+        errorProgress.classList.remove('error-progress');
+        void errorProgress.offsetWidth; // force reflow
+        errorProgress.classList.add('error-progress');
+
+        // Show
+        errorBanner.classList.add('visible');
+
+        // Auto-dismiss after 12 seconds
+        errorTimeout = setTimeout(hideError, 12000);
+    }
+
+    function hideError() {
+        errorBanner.classList.remove('visible');
+        if (errorTimeout) {
+            clearTimeout(errorTimeout);
+            errorTimeout = null;
+        }
+    }
+
+    dismissError.onclick = hideError;
 
     closeResults.onclick = () => {
         resultsOverlay.classList.add('hidden');
@@ -302,6 +394,7 @@
 
     form.onsubmit = async (e) => {
         e.preventDefault();
+        hideError(); // clear any previous error
         
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
@@ -318,14 +411,17 @@
 
             if (!response.ok) {
                 const responseText = await response.text();
-                let serverError = "Unknown Server Error";
+                let serverError = 'Unknown Server Error';
+                let errorCode = 'UNKNOWN';
                 try {
                     const errorJson = JSON.parse(responseText);
                     serverError = errorJson.error || serverError;
-                } catch (e) {
-                    serverError = `HTTP ${response.status}: ${responseText.substring(0, 100)}`;
+                    errorCode = errorJson.code || errorCode;
+                } catch (parseErr) {
+                    serverError = `HTTP ${response.status}: ${responseText.substring(0, 200)}`;
                 }
-                throw new Error(serverError);
+                showError(serverError, errorCode);
+                return;
             }
 
             const result = await response.json();
@@ -335,8 +431,13 @@
             document.body.style.overflow = 'hidden';
             resultsOverlay.scrollIntoView({ behavior: 'smooth' });
         } catch (error) {
-            console.error("System Error Details:", error);
-            alert("SYSTEM FAULT:\n" + error.message);
+            console.error('System Error Details:', error);
+            // Network or fetch failure
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                showError('Network error — could not reach the server. Check your connection and try again.', 'NETWORK');
+            } else {
+                showError(error.message || 'An unexpected error occurred.', 'UNKNOWN');
+            }
         } finally {
             submitBtn.classList.remove('loading');
         }
