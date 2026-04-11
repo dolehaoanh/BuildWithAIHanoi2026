@@ -1,10 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Model fallback chain — tries each in order until one succeeds
+// gemini-1.5-flash is first as the most reliably available on free/new keys
 const MODEL_CHAIN = [
-  "gemini-2.0-flash",
   "gemini-1.5-flash",
   "gemini-1.5-flash-8b",
+  "gemini-2.0-flash",
 ];
 
 export default async function handler(req, res) {
@@ -72,8 +73,13 @@ export default async function handler(req, res) {
         const msg = modelError.message || '';
         console.warn(`Model ${modelName} failed:`, msg.substring(0, 120));
 
-        // Only continue the chain for quota/rate-limit errors
-        if (msg.includes('429') || msg.includes('quota') || msg.includes('Too Many Requests') || msg.includes('RESOURCE_EXHAUSTED')) {
+        // Continue the chain for quota/rate-limit OR model-not-found errors
+        const isRetryable = (
+          msg.includes('429') || msg.includes('quota') ||
+          msg.includes('Too Many Requests') || msg.includes('RESOURCE_EXHAUSTED') ||
+          msg.includes('404') || msg.includes('not found') || msg.includes('MODEL_NOT_FOUND')
+        );
+        if (isRetryable) {
           lastError = modelError;
           continue; // try next model
         }

@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   }
 
   const keyPrefix = API_KEY.substring(0, 8) + '...';
-  const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-flash-8b"];
+  const models = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-2.0-flash"];
   const results = [];
 
   const genAI = new GoogleGenerativeAI(API_KEY);
