@@ -1,18 +1,21 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  console.log("Handler started. Method:", req.method);
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { age, weight, height, bodyfat, style } = req.body;
-  const API_KEY = process.env.GEMINI_API_KEY;
-
-  if (!API_KEY) {
-    return res.status(500).json({ error: 'API Key not configured on server' });
-  }
-
   try {
+    const { age, weight, height, bodyfat, style } = req.body;
+    const API_KEY = process.env.GEMINI_API_KEY;
+
+    if (!API_KEY) {
+      console.error("Missing GEMINI_API_KEY in environment");
+      return res.status(500).json({ error: 'API Key not configured on server. Please check Vercel environment variables.' });
+    }
+
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -43,12 +46,12 @@ export default async function handler(req, res) {
     const response = await result.response;
     const text = response.text();
     
-    // Cleanup in case Gemini returns markdown blocks
     const cleanHtml = text.replace(/```html|```/g, '');
     
+    res.setHeader('Content-Type', 'application/json');
     return res.status(200).json({ html: cleanHtml });
   } catch (error) {
-    console.error("Gemini Error:", error);
-    return res.status(500).json({ error: error.message || 'Internal Server Error' });
+    console.error("Gemini Backend Error:", error);
+    return res.status(500).json({ error: "BACKEND ERROR: " + error.message });
   }
 }
