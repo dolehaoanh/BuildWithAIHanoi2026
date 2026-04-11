@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic Lab | Elite Performance Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script type="importmap">
+  {
+    "imports": {
+      "@google/generative-ai": "https://esm.run/@google/generative-ai"
+    }
+  }
+</script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#abd600",
+                        "surface-container": "#1e2021",
+                        "on-error": "#690005",
+                        "surface-variant": "#333536",
+                        "on-tertiary-container": "#818380",
+                        "surface-container-high": "#282a2b",
+                        "primary-container": "#151d00",
+                        "on-secondary": "#263046",
+                        "on-tertiary-fixed": "#1a1c1a",
+                        "on-primary-container": "#708d00",
+                        "tertiary-container": "#181b19",
+                        "tertiary-fixed": "#e2e3df",
+                        "inverse-primary": "#506600",
+                        "inverse-on-surface": "#2f3132",
+                        "inverse-surface": "#e2e2e3",
+                        "surface-container-highest": "#333536",
+                        "on-surface-variant": "#c4c6cc",
+                        "secondary": "#bbc6e2",
+                        "background": "#121415",
+                        "surface-container-lowest": "#0c0e0f",
+                        "surface": "#121415",
+                        "on-tertiary-fixed-variant": "#454745",
+                        "on-primary": "#283500",
+                        "tertiary": "#c6c7c3",
+                        "on-secondary-fixed": "#101b30",
+                        "secondary-fixed": "#d7e2ff",
+                        "on-primary-fixed-variant": "#3c4d00",
+                        "on-secondary-container": "#adb8d3",
+                        "secondary-fixed-dim": "#bbc6e2",
+                        "primary-fixed-dim": "#abd600",
+                        "surface-dim": "#121415",
+                        "on-tertiary": "#2f312e",
+                        "primary-fixed": "#c3f400",
+                        "surface-bright": "#38393a",
+                        "on-error-container": "#ffdad6",
+                        "on-surface": "#e2e2e3",
+                        "tertiary-fixed-dim": "#c6c7c3",
+                        "surface-container-low": "#1a1c1d",
+                        "on-secondary-fixed-variant": "#3c475d",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "on-background": "#e2e2e3",
+                        "secondary-container": "#3e4960",
+                        "surface-tint": "#abd600",
+                        "outline": "#8e9196",
+                        "on-primary-fixed": "#161e00",
+                        "outline-variant": "#44474c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(51, 53, 54, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .kinetic-gradient {
+            background: linear-gradient(135deg, #abd600 0%, #708d00 100%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    .loading-spinner {
+        display: none;
+    }
+    .loading .loading-spinner {
+        display: block;
+    }
+    .loading .button-text {
+        display: none;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #abd600;
+        border-radius: 10px;
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col overflow-x-hidden">
+<!-- Hero Background Section -->
+<div class="fixed inset-0 z-0 overflow-hidden">
+<img alt="Athletic Soccer Performance" class="w-full h-full object-cover opacity-30 grayscale" data-alt="Intense close-up of a professional soccer player's legs during a powerful sprint on a dark, rainy pitch with dramatic stadium lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKE3LA1u8uOShQQ92gcM_8yeOu94ypR0dThhZGOKZQ5mOI9Y5HazRokD44hdYgJdobPO8ketciGxnLqOWi5gZTzLy8_65WBoMPkKe5kcqRzYigO4pBczYI1iM4DE81IiZGkLzTxbRAbBMZ0v9Zhv_EN8gX3DP_BsFzpUlUBGyjoEr7fUOgGjQUHHDWUd4p7XXUhkZg-K7Z3NVVB3fmESJ3QvR54kOoG9Cw7TaFHv-5t77NcQLBI7BWg-GcZrj1XMyxewKYF3-0jA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+</div>
+<!-- Header (No Nav Shell as per Transactional Rule) -->
+<header class="relative z-10 pt-10 px-8 max-w-screen-xl mx-auto w-full flex justify-between items-end">
+<div>
+<h1 class="font-headline font-black text-4xl tracking-tighter uppercase text-primary">
+                KINETIC LAB
+            </h1>
+<p class="font-label text-[10px] uppercase tracking-[0.2em] text-outline mt-1 font-bold">
+                Elite Athlete Protocol / System Initialize
+            </p>
+</div>
+<div class="hidden md:block">
+<div class="text-right">
+<p class="font-headline font-bold text-lg text-primary tracking-tight">PHASE 01</p>
+<p class="font-label text-[10px] text-outline uppercase tracking-widest">Biometric Calibration</p>
+</div>
+</div>
+</header>
+<!-- Main Onboarding Content -->
+<main class="relative z-10 flex-grow flex items-center justify-center px-6 py-12">
+<div class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Side: Context & Branding -->
+<div class="lg:col-span-5 space-y-6">
+<div class="space-y-2">
+<h2 class="font-headline text-5xl font-bold tracking-tighter leading-none">
+                        ENGINEER <br/> <span class="text-primary">YOUR ELITE</span> <br/> PERFORMANCE.
+                    </h2>
+<p class="text-on-surface-variant text-sm max-w-xs pt-4 font-medium leading-relaxed">
+                        Precision data is the foundation of the Kinetic Lab. Input your biometrics to calibrate your custom training load and nutritional targets.
+                    </p>
+</div>
+<div class="space-y-4 pt-4">
+<div class="flex items-center gap-4 group">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center border-l-2 border-primary">
+<span class="material-symbols-outlined text-primary text-xl">monitoring</span>
+</div>
+<div>
+<p class="font-label text-[10px] text-outline uppercase tracking-widest">METRIC 01</p>
+<p class="font-headline font-bold text-sm tracking-tight">POWER-TO-WEIGHT RATIO</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center opacity-40">
+<span class="material-symbols-outlined text-outline text-xl">sprint</span>
+</div>
+<div>
+<p class="font-label text-[10px] text-outline uppercase tracking-widest">METRIC 02</p>
+<p class="font-headline font-bold text-sm tracking-tight text-on-surface-variant">VELOCITY CAPACITY</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Data Collection Form -->
+<div class="lg:col-span-7" id="onboarding-step">
+<form class="glass-panel rounded-xl p-8 lg:p-10 space-y-10 relative overflow-hidden" id="athlete-form">
+<!-- Subtle Accent -->
+<div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary to-transparent"></div>
+<!-- Step Indicators -->
+<div class="flex gap-2">
+<div class="h-1 w-12 bg-primary rounded-full"></div>
+<div class="h-1 w-12 bg-surface-container-highest rounded-full"></div>
+<div class="h-1 w-12 bg-surface-container-highest rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+<!-- Age Input -->
+<div class="relative group">
+<label class="font-label text-[10px] text-outline uppercase tracking-widest block mb-2 font-bold group-focus-within:text-primary transition-colors">Age</label>
+<input id="age" name="age" required class="w-full bg-transparent border-0 border-b border-outline focus:border-primary focus:ring-0 text-2xl font-headline font-medium p-0 pb-2 placeholder:text-surface-variant" placeholder="24" type="number"/>
+</div>
+<!-- Weight Input -->
+<div class="relative group">
+<label class="font-label text-[10px] text-outline uppercase tracking-widest block mb-2 font-bold group-focus-within:text-primary transition-colors">Weight (KG)</label>
+<input id="weight" name="weight" required class="w-full bg-transparent border-0 border-b border-outline focus:border-primary focus:ring-0 text-2xl font-headline font-medium p-0 pb-2 placeholder:text-surface-variant" placeholder="78.5" type="number" step="0.1"/>
+</div>
+<!-- Height Input -->
+<div class="relative group">
+<label class="font-label text-[10px] text-outline uppercase tracking-widest block mb-2 font-bold group-focus-within:text-primary transition-colors">Height (CM)</label>
+<input id="height" name="height" required class="w-full bg-transparent border-0 border-b border-outline focus:border-primary focus:ring-0 text-2xl font-headline font-medium p-0 pb-2 placeholder:text-surface-variant" placeholder="182" type="number"/>
+</div>
+<!-- Body Fat Input -->
+<div class="relative group">
+<label class="font-label text-[10px] text-outline uppercase tracking-widest block mb-2 font-bold group-focus-within:text-primary transition-colors">Body Fat (%)</label>
+<input id="bodyfat" name="bodyfat" required class="w-full bg-transparent border-0 border-b border-outline focus:border-primary focus:ring-0 text-2xl font-headline font-medium p-0 pb-2 placeholder:text-surface-variant" placeholder="11.2" type="number" step="0.1"/>
+</div>
+</div>
+<!-- Play Style Selector -->
+<div class="space-y-4">
+<label class="font-label text-[10px] text-outline uppercase tracking-widest block font-bold">Play-Style Focus</label>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<label class="relative cursor-pointer group">
+<input checked="" class="peer sr-only" name="style" type="radio" value="Striker"/>
+<div class="px-3 py-4 rounded-lg bg-surface-container-high border-l-2 border-transparent peer-checked:border-primary peer-checked:bg-primary-container transition-all text-center">
+<p class="font-headline font-bold text-xs uppercase tracking-tighter peer-checked:text-primary">Striker</p>
+</div>
+</label>
+<label class="relative cursor-pointer group">
+<input class="peer sr-only" name="style" type="radio" value="Winger"/>
+<div class="px-3 py-4 rounded-lg bg-surface-container-high border-l-2 border-transparent peer-checked:border-primary peer-checked:bg-primary-container transition-all text-center">
+<p class="font-headline font-bold text-xs uppercase tracking-tighter peer-checked:text-primary">Winger</p>
+</div>
+</label>
+<label class="relative cursor-pointer group">
+<input class="peer sr-only" name="style" type="radio" value="Midfielder"/>
+<div class="px-3 py-4 rounded-lg bg-surface-container-high border-l-2 border-transparent peer-checked:border-primary peer-checked:bg-primary-container transition-all text-center">
+<p class="font-headline font-bold text-xs uppercase tracking-tighter peer-checked:text-primary">Midfielder</p>
+</div>
+</label>
+<label class="relative cursor-pointer group">
+<input class="peer sr-only" name="style" type="radio" value="Defender"/>
+<div class="px-3 py-4 rounded-lg bg-surface-container-high border-l-2 border-transparent peer-checked:border-primary peer-checked:bg-primary-container transition-all text-center">
+<p class="font-headline font-bold text-xs uppercase tracking-tighter peer-checked:text-primary">Defender</p>
+</div>
+</label>
+</div>
+</div>
+<!-- CTA Button -->
+<div class="pt-6">
+<button type="submit" id="submit-btn" class="kinetic-gradient w-full py-4 rounded-lg flex items-center justify-center gap-3 active:scale-95 transition-transform group">
+<span class="font-headline font-black uppercase text-on-primary-fixed tracking-tight button-text">Initialize Protocol</span>
+<div class="loading-spinner animate-spin">
+    <span class="material-symbols-outlined text-on-primary-fixed">sync</span>
+</div>
+<span class="material-symbols-outlined text-on-primary-fixed group-hover:translate-x-1 transition-transform button-text">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+</main>
+
+<!-- Results Overlay -->
+<div id="results-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-background/80 backdrop-blur-md">
+    <div class="glass-panel w-full max-w-4xl rounded-xl p-8 lg:p-10 space-y-6 relative overflow-hidden shadow-2xl border border-primary/20">
+        <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary to-transparent"></div>
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="font-headline text-3xl font-bold tracking-tighter uppercase text-primary">Performance Protocol</h3>
+                <p class="font-label text-[10px] uppercase tracking-widest text-outline">System Initialize / Phase 01 / Response</p>
+            </div>
+            <button id="close-results" class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-outline hover:text-primary transition-all active:scale-90">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div id="gemini-response" class="max-h-[60vh] overflow-y-auto pr-4 text-on-surface-variant font-medium leading-relaxed space-y-6 custom-scrollbar">
+            <!-- Result content goes here -->
+        </div>
+        <div class="pt-6 border-t border-outline/10 flex justify-between items-center">
+             <p class="font-label text-[8px] text-outline uppercase tracking-widest">Calculated by Gemini 1.5 Flash / Real-time Bio-analysis</p>
+             <button onclick="window.print()" class="text-primary font-headline font-bold text-xs uppercase tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity">
+                 <span class="material-symbols-outlined text-sm">print</span> Export Protocol
+             </button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+
+    const API_KEY_STORAGE_KEY = 'KINETIC_LAB_API_KEY';
+    
+    let API_KEY = new URLSearchParams(window.location.search).get('key') || localStorage.getItem(API_KEY_STORAGE_KEY);
+    
+    if (!API_KEY) {
+        API_KEY = prompt("Please enter your Google Gemini API Key to initialize the protocol:");
+        if (API_KEY) localStorage.setItem(API_KEY_STORAGE_KEY, API_KEY);
+    }
+
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const form = document.getElementById('athlete-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsOverlay = document.getElementById('results-overlay');
+    const responseContainer = document.getElementById('gemini-response');
+    const closeResults = document.getElementById('close-results');
+
+    if (closeResults) {
+        closeResults.onclick = () => {
+            resultsOverlay.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        };
+    }
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!API_KEY) {
+            API_KEY = prompt("API Key missing. Please enter your Google Gemini API Key:");
+            if (API_KEY) localStorage.setItem(API_KEY_STORAGE_KEY, API_KEY);
+            else return;
+        }
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        submitBtn.classList.add('loading');
+        
+        const promptText = `
+            Act as an elite sports scientist and soccer performance coach. 
+            Generate a comprehensive elite-level performance protocol for a player with these biometrics:
+            - Age: ${data.age}
+            - Weight: ${data.weight}kg
+            - Height: ${data.height}cm
+            - Body Fat: ${data.bodyfat}%
+            - Desired Play-style: ${data.style}
+
+            Task:
+            1. Research world-class elite soccer players with similar physical profiles (height/weight) and play-style. Mention them explicitly as benchmarks.
+            2. Suggest scientific training loads (Strength, Speed, Technical).
+            3. Provide a nutrition plan to reach ideal elite body measurements (Ideal weight, muscle size, body fat %).
+            4. Include sleep and recovery protocols suitable for an elite athlete.
+            5. Ensure all advice is fact-checked against modern sports science.
+
+            Format the output ONLY using these HTML tags for styling:
+            - <h4 class="text-primary font-headline font-bold text-xl mt-6 uppercase tracking-tight">TITLE</h4>
+            - <p class="text-on-surface-variant mb-4 font-medium">TEXT</p>
+            - <ul class="space-y-2 mb-6 ml-4"><li>ITEM</li></ul>
+            - <strong class="text-white font-bold">BOLD TEXT</strong>
+            
+            Do not include Markdown blocks like \`\`\`html. Just return the HTML content.
+        `;
+
+        try {
+            const result = await model.generateContent(promptText);
+            const response = await result.response;
+            const text = response.text().replace(/\`\`\`html|\`\`\`/g, '');
+            
+            responseContainer.innerHTML = text;
+            resultsOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            resultsOverlay.scrollIntoView({ behavior: 'smooth' });
+        } catch (error) {
+            console.error(error);
+            alert("Error generating protocol. Please verify your API Key or check the console.");
+        } finally {
+            submitBtn.classList.remove('loading');
+        }
+    };
+</script>
+
+<!-- Footer Stats / Decor -->
+<footer class="relative z-10 px-8 pb-10 max-w-screen-xl mx-auto w-full flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex gap-10">
+<div>
+<p class="font-label text-[8px] text-outline uppercase tracking-widest">SERVER STATUS</p>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+<p class="font-headline font-bold text-xs uppercase tracking-tight">Operational</p>
+</div>
+</div>
+<div>
+<p class="font-label text-[8px] text-outline uppercase tracking-widest">ATHLETE DB</p>
+<p class="font-headline font-bold text-xs uppercase tracking-tight">12,842 Encrypted</p>
+</div>
+</div>
+<div class="font-label text-[10px] text-outline/40 uppercase tracking-[0.2em] md:text-right">
+            © 2024 Kinetic Performance Systems // Lab-71 Access
+        </div>
+</footer>
+</body></html>
