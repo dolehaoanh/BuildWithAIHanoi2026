@@ -1,50 +1,63 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
 /**
  * GET /api/health
- * Quick diagnostics endpoint — tests the API key with a minimal prompt.
- * Returns model status without exposing the full key.
+ * Tests the Gemini REST API directly (no SDK) with a minimal prompt.
+ * Reports per-model status so you can see exactly which models work.
  */
+
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+const MODELS = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-2.0-flash", "gemini-1.0-pro"];
+
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const API_KEY = process.env.GEMINI_API_KEY;
 
   if (!API_KEY) {
     return res.status(500).json({
-      status: 'error',
-      code: 'NO_API_KEY',
-      message: 'GEMINI_API_KEY environment variable is not set in Vercel.',
+      status: "error",
+      code: "NO_API_KEY",
+      message: "GEMINI_API_KEY environment variable is not set in Vercel.",
       keyPrefix: null,
     });
   }
 
-  const keyPrefix = API_KEY.substring(0, 8) + '...';
-  const models = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-2.0-flash"];
+  const keyPrefix = API_KEY.substring(0, 8) + "...";
   const results = [];
 
-  const genAI = new GoogleGenerativeAI(API_KEY);
-
-  for (const modelName of models) {
+  for (const modelName of MODELS) {
+    const url = `${GEMINI_BASE}/${modelName}:generateContent?key=${API_KEY}`;
     try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent("Reply with exactly: OK");
-      const text = result.response.text().trim();
-      results.push({ model: modelName, status: 'ok', response: text });
+      const fetchRes = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: "Reply with exactly: OK" }] }],
+        }),
+      });
+
+      const json = await fetchRes.json();
+
+      if (!fetchRes.ok) {
+        const googleMsg = json?.error?.message || JSON.stringify(json);
+        let code = `HTTP_${fetchRes.status}`;
+        if (fetchRes.status === 429 || googleMsg.includes("quota")) code = "QUOTA_EXCEEDED";
+        else if (fetchRes.status === 403) code = "INVALID_KEY";
+        else if (fetchRes.status === 404) code = "MODEL_NOT_FOUND";
+        results.push({ model: modelName, status: "error", code, detail: googleMsg.substring(0, 200) });
+      } else {
+        const text = json?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        results.push({ model: modelName, status: "ok", response: text });
+      }
     } catch (err) {
-      const msg = err.message || '';
-      let code = 'ERROR';
-      if (msg.includes('429') || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) code = 'QUOTA_EXCEEDED';
-      else if (msg.includes('403') || msg.includes('PERMISSION_DENIED') || msg.includes('API key not valid')) code = 'INVALID_KEY';
-      results.push({ model: modelName, status: 'error', code, detail: msg.substring(0, 200) });
+      results.push({ model: modelName, status: "error", code: "FETCH_ERROR", detail: err.message });
     }
   }
 
-  const anyOk = results.some(r => r.status === 'ok');
+  const anyOk = results.some((r) => r.status === "ok");
   return res.status(anyOk ? 200 : 503).json({
-    status: anyOk ? 'healthy' : 'degraded',
+    status: anyOk ? "healthy" : "degraded",
     keyPrefix,
     models: results,
     timestamp: new Date().toISOString(),
